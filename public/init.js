@@ -15,15 +15,11 @@ $(function() {
     });
   });
 
-  /*$(document).click(function(event) {
+  $(document).click(function(event) {
     socket.emit('click', {
       id: $(this).prop('id'),
       // other props from settings
     })
-  });*/
-
-  $('#stop').click(function() {
-    socket.emit('disconnect');
   });
 
 });
