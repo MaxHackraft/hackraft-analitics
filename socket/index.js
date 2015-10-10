@@ -1,5 +1,8 @@
 module.exports = function(io) {
   var clients = {};
+  var actions = {};
+  var containers = {};
+
   var clientsCounter = 0;
 
   io.on('connection', function (socket) {
@@ -7,48 +10,50 @@ module.exports = function(io) {
     var addedClient = false;
 
     socket.on('start', function (client) {
-      if(!client) {
+      /*if(!client) {
         // create client
         socket.broadcast.emit('newClient', {
           // push data
         });
-      }
+      }*/
 
-      socket.client = client;
-      socket.client.actions = [];
-      socket.client.containers = [];
-
+      socket.clientId = client.cookieId;
       clients[client.cookieId] = client;
+      actions[client.cookieId] = [];
+      containers[client.cookieId] = [];
+
       ++clientsCounter;
       addedClient = true;
     });
 
     socket.on('cursor', function (data) {
-      //socket.client.actions.push(data);
+      actions[socket.clientId].push(data);
 
-      if(socket.client.containers[data.target]) {
-        socket.client.containers[data.target] = socket.client.containers[data.target] + 1;
+      if(containers[socket.clientId][data.target]) {
+        containers[socket.clientId][data.target] = containers[socket.clientId][data.target] + 1;
       } else {
-        socket.client.containers[data.target] = 1;
+        containers[socket.clientId][data.target] = 1;
       }
 
-      console.log(socket.client.containers);
+      console.log(containers[socket.clientId]);
     });
 
     socket.on('click', function (data) {
       // user click
     });
 
-    /*socket.on('disconnect', function (err) {
+    socket.on('disconnect', function (err) {
+      console.log(socket.clientId)
       if (addedClient) {
-        delete clients[socket.client];
-        delete socket.client;
+        delete clients[socket.clientId];
+        delete actions[socket.clientId];
+        delete containers[socket.clientId];
+        delete socket.clientId;
         --clientsCounter;
       }
-
       console.log('disconnected')
-    });*/
+    });
   });
 
-  ///return io;
+  return io;
 };

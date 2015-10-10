@@ -14,7 +14,7 @@ $(function() {
       target: e.target.id || e.target.localName
     });
   });
-  
+
   /*$(document).click(function(event) {
     socket.emit('click', {
       id: $(this).prop('id'),
