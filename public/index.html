@@ -1,20 +1,22 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script src="/init.js"></script>
   <meta charset="UTF-8">
   <title>test</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="container-first" style="heigth:20px; width: 200px; float:left">
-    first container
+  <div id="active-area">
+    <div id="container-first" style="heigth:20px; width: 200px; float:left">
+      first container
+    </div>
+    <div id="container-second" style="heigth:20px; width: 200px; float:left">
+      second container
+    </div>
   </div>
-  <div id="container-second" style="heigth:20px; width: 200px; float:left">
-    second container
-  </div>
-
-  <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/init.js"></script>
+  <button type="" id="stop">stop</button>
 </body>
 </html>
