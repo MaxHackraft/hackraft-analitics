@@ -1,12 +1,12 @@
+// спросить про пушинг данных
 module.exports = function(io) {
-  var clients = {};
-  var actions = {};
-  var containers = {};
-
-  var clientsCounter = 0;
+  var clients = {},
+      actions = {},
+      containers = {},
+      changes = [],
+      clientsCounter = 0;
 
   io.on('connection', function (socket) {
-    console.log('start')
     var addedClient = false;
 
     socket.on('start', function (client) {
@@ -26,17 +26,31 @@ module.exports = function(io) {
       addedClient = true;
     });
 
-    socket.on('cursor', function (data) {
+    socket.on('change', function (data) {
       var length = actions[socket.clientId].length;
 
-      if(actions[socket.clientId][length - 1])
-        data.speed = Math.abs(
-          (actions[socket.clientId][length - 1].x - +data.x) / 
-          (actions[socket.clientId][length - 1].stamp - +data.stamp)
-        );
+      if(actions[socket.clientId][length - 1]) {
+        data.type == 'move' ? data.speed = {
+          x: Math.abs( 
+            (actions[socket.clientId][length - 1].x - +data.x) /
+            (actions[socket.clientId][length - 1].stamp - +data.stamp)
+          ),
+          y: Math.abs(
+            (actions[socket.clientId][length - 1].y - +data.y) /
+            (actions[socket.clientId][length - 1].stamp - +data.stamp)
+          ),
+        } : {
+          // parse params
+        }
+
+        if(data.target !== actions[socket.clientId][length - 1].target) 
+          changes.push({
+            target: data.target,
+            type: data.type
+          });
+      }
 
       actions[socket.clientId].push(data);
-      console.log(data);
 
       if(containers[socket.clientId][data.target]) {
         containers[socket.clientId][data.target] = containers[socket.clientId][data.target] + 1;
@@ -45,9 +59,6 @@ module.exports = function(io) {
       }
     });
 
-    socket.on('click', function (data) {
-      // user click
-    });
 
     socket.on('disconnect', function (err) {
       if(actions[socket.clientId]) {
@@ -61,7 +72,7 @@ module.exports = function(io) {
       delete containers[socket.clientId];
       delete socket.clientId;
       --clientsCounter;
-      console.log('disconnected')
+      console.log(changes);
     });
   });
 
